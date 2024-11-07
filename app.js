@@ -1,12 +1,13 @@
 // sets up the Express application, middleware, and routes.
+const dotenv = require('dotenv');
 
-require('dotenv').config();
+dotenv.config();
 
 const express = require('express');
 const app = express();
 const connectDB = require('./config/database');
 
-/*
+
 // Connect to MongoDB
 connectDB();
 
@@ -14,6 +15,6 @@ connectDB();
 app.use(express.json());
 
 // Routes
-app.use('/api', userRoutes);
-*/
+app.use('/api/items', require('./routes/item'));
+
 module.exports = app;
