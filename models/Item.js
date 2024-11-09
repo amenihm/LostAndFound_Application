@@ -32,7 +32,8 @@ const itemSchema = new mongoose.Schema({
     phone: String
   },
   image: {
-    type: String // URL to image if you want to implement image upload
+    type: String,
+    required: false
   }
 });
 
