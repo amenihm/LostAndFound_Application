@@ -7,7 +7,8 @@ const connectDB = require("./config/database");
 const path = require("path");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
-
+const itemRoutes = require("./routes/item.routes");
+const chatbotRoutes = require("./routes/chatbot");
 dotenv.config();
 
 // Connect to MongoDB
@@ -29,7 +30,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 
 // Routes
-app.use("/api/items", require("./routes/item"));
+app.use("/api/items", itemRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/chatbot", chatbotRoutes);
+
 module.exports = app;
