@@ -52,16 +52,24 @@ const itemController = {
     try {
       const item = await Item.findById(req.params.id);
       if (item) {
+        // Update basic fields
         item.title = req.body.title || item.title;
         item.description = req.body.description || item.description;
         item.category = req.body.category || item.category;
         item.location = req.body.location || item.location;
         item.status = req.body.status || item.status;
+        item.date = req.body.date || item.date;
 
+        // Update contact info
         if (req.body.contactInfo) {
-          item.contactInfo = JSON.parse(req.body.contactInfo);
+          const contactInfo = JSON.parse(req.body.contactInfo);
+          item.contactInfo = {
+            email: contactInfo.email || item.contactInfo.email,
+            phone: contactInfo.phone || item.contactInfo.phone
+          };
         }
 
+        // Update image if new one is uploaded
         if (req.file) {
           item.image = `/uploads/${req.file.filename}`;
         }
@@ -72,6 +80,7 @@ const itemController = {
         res.status(404).json({ message: "Item not found" });
       }
     } catch (error) {
+      console.error('Update error:', error);
       res.status(400).json({ message: error.message });
     }
   },
