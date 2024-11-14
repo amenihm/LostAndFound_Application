@@ -22,7 +22,7 @@ const itemController = {
         category: req.body.category,
         location: req.body.location,
         status: req.body.status,
-        contactInfo: req.body.contactInfo,
+        contactInfo: JSON.parse(req.body.contactInfo), // Parse the JSON string
         image: req.file ? `/uploads/${req.file.filename}` : null,
       });
 
@@ -50,35 +50,51 @@ const itemController = {
   // Update item
   updateItem: async (req, res) => {
     try {
-      const item = await Item.findById(req.params.id);
-      if (item) {
-        // Update basic fields
-        item.title = req.body.title || item.title;
-        item.description = req.body.description || item.description;
-        item.category = req.body.category || item.category;
-        item.location = req.body.location || item.location;
-        item.status = req.body.status || item.status;
-        item.date = req.body.date || item.date;
+      console.log('Update request received:', req.params.id);
+      console.log('Request body:', req.body);
 
-        // Update contact info
-        if (req.body.contactInfo) {
-          const contactInfo = JSON.parse(req.body.contactInfo);
-          item.contactInfo = {
-            email: contactInfo.email || item.contactInfo.email,
-            phone: contactInfo.phone || item.contactInfo.phone
-          };
-        }
-
-        // Update image if new one is uploaded
-        if (req.file) {
-          item.image = `/uploads/${req.file.filename}`;
-        }
-
-        const updatedItem = await item.save();
-        res.json(updatedItem);
-      } else {
-        res.status(404).json({ message: "Item not found" });
+      let contactInfo;
+      try {
+        contactInfo = JSON.parse(req.body.contactInfo);
+        console.log('Parsed contact info:', contactInfo);
+      } catch (error) {
+        console.error('Error parsing contactInfo:', error);
+        return res.status(400).json({ message: 'Invalid contact info format' });
       }
+
+      const updateData = {
+        title: req.body.title,
+        description: req.body.description,
+        category: req.body.category,
+        location: req.body.location,
+        status: req.body.status,
+        date: req.body.date,
+        contactInfo: {
+          name: contactInfo.name,
+          email: contactInfo.email,
+          phone: contactInfo.phone || ''
+        }
+      };
+
+      // Add image only if a new one is uploaded
+      if (req.file) {
+        updateData.image = `/uploads/${req.file.filename}`;
+      }
+
+      console.log('Final update data:', updateData);
+
+      const updatedItem = await Item.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedItem) {
+        return res.status(404).json({ message: 'Item not found' });
+      }
+
+      console.log('Updated item:', updatedItem);
+      res.json(updatedItem);
     } catch (error) {
       console.error('Update error:', error);
       res.status(400).json({ message: error.message });

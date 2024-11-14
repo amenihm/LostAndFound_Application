@@ -27,9 +27,9 @@ const itemSchema = new mongoose.Schema({
     required: true
   },
   contactInfo: {
-    name: String,
-    email: String,
-    phone: String
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String }
   },
   image: {
     type: String,
