@@ -64,6 +64,7 @@ const itemController = {
         if (req.body.contactInfo) {
           const contactInfo = JSON.parse(req.body.contactInfo);
           item.contactInfo = {
+            name: contactInfo.name || item.contactInfo.name,
             email: contactInfo.email || item.contactInfo.email,
             phone: contactInfo.phone || item.contactInfo.phone
           };
